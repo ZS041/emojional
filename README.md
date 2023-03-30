@@ -10,7 +10,14 @@ Typescript
 TailwindCSS
 MySQL/PlanetScale
 Upstash/Redis
-
+<ul>
+<li>React/Next.js</li>
+<li>TRPC</li>
+<li>Prisma</li>
+<li>Typescript</li>
+<li>MySQL/PlanetScale</li>
+<li>Upstash/Redis</li>
+</ul>
 ## Usage
 
 Clone the repo, run npm install in your terminal while at the project root. All dependences should be installed. 
