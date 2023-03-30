@@ -1,28 +1,36 @@
-# Create T3 App
+# Emojional
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A full-stack Twitter-esque project I started to understand data fetching, mutation, and validation using technologies like Prisma, TRPC, and ZOD. 
 
-## What's next? How do I make an app with this?
+## Tech Stack(T3 Stack)
+React/Next.js
+TRPC
+Prisma
+Typescript
+TailwindCSS
+MySQL/PlanetScale
+Upstash/Redis
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Usage
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Clone the repo, run npm install in your terminal while at the project root. All dependences should be installed. 
+You will need 5 environment variables, one for your database URL. I chose MySQL using Planetscale, but anything can work. 
+You will need to make a Clerk account and grab the two environment variables necessary, as well as an Upstash account for the last two. 
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+This project is setup to be hosted on Vercel. You will need to make a .env file for local testing with these variables, as well as input them into 
+your Vercel deployment when you've reached that point. The necessary variables are listed below.
 
-## Learn More
+<ul>
+<li>DATABASE_URL</li>
+<li>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</li>
+<li>CLERK_SECRET_KEY</li>
+<li>UPSTASH_REDIS_REST_URL</li>
+<li>UPSTASH_REDIS_REST_TOKEN</li>
+</ul>
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+Once you've installed the necessary dependencies and set up your environment variables, use npm run dev to start the project locally, then navigate to localhost:3000 to view your changes. 
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+You will also need to properly setup tables matching the prisma schema. This is a simple table with a few fields, id, createdAt, content, and authorId. Run prisma studio using npx prisma studio, and set up there. 
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
-## How do I deploy this?
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
