@@ -1,15 +1,8 @@
 # Emojional
 
-A full-stack Twitter-esque project I started to understand data fetching, mutation, and validation using technologies like Prisma, TRPC, and ZOD. 
+A full-stack Twitter-esque project I started to better understand type safety, data fetching, mutation, and validation using technologies like Prisma, TRPC, and ZOD. 
 
 ## Tech Stack(T3 Stack)
-React/Next.js
-TRPC
-Prisma
-Typescript
-TailwindCSS
-MySQL/PlanetScale
-Upstash/Redis
 <ul>
 <li>React/Next.js</li>
 <li>TRPC</li>
