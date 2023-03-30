@@ -1,6 +1,6 @@
 # Emojional
 
-A full-stack Twitter-esque project I started to better understand type safety, data fetching, mutation, and validation using technologies like Prisma, TRPC, and ZOD. 
+A full-stack Twitter-esque project built with the intention of gaining a better understanding of type safety, data fetching, mutation, and validation using technologies like Prisma, TRPC, and ZOD. 
 
 ## Tech Stack(T3 Stack)
 <ul>
@@ -31,7 +31,7 @@ your Vercel deployment when you've reached that point. The necessary variables a
 
 Once you've installed the necessary dependencies and set up your environment variables, use npm run dev to start the project locally, then navigate to localhost:3000 to view your changes. 
 
-You will also need to properly setup tables matching the prisma schema. This is a simple table with a few fields, id, createdAt, content, and authorId. Run prisma studio using npx prisma studio, and set up there. 
+You will also need to properly setup tables matching the prisma schema. This is a simple table with a few fields, id, createdAt, content, and authorId. Run prisma studio using npx prisma studio, after completing your account setup/environment variable setup, and then make your changes directly in the provided Studio GUI.
 
 
 
