@@ -77,7 +77,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             </span>
             <span className="text-sm font-light">
               {" "}
-              {` ${postCount} Emotions`}
+              {` ${postCount} Emojions`}
             </span>
           </div>
         </div>
