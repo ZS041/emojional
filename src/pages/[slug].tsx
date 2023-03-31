@@ -6,14 +6,22 @@ import { PageLayout } from "~/components/layout";
 import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
+import { useState } from "react";
+import Link from "next/link";
 
-const ProfileFeed = (props: { userId: string }) => {
+const ProfileFeed = (props: {
+  userId: string;
+  onPostCountChange: (count: number) => void;
+}) => {
   const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
     userId: props.userId,
   });
 
   if (isLoading) return <LoadingPage />;
   if (!data || data.length === 0) return <div>User has not posted</div>;
+
+  // Notify the parent component about the post count
+  props.onPostCountChange(data.length);
 
   return (
     <div className="flex flex-col">
@@ -29,6 +37,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     username,
   });
 
+  const [postCount, setPostCount] = useState(0);
+
   if (!data) return <div>404</div>;
   return (
     <>
@@ -36,7 +46,44 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         <title>{data.username}</title>
       </Head>
       <PageLayout>
+        <div className="flex h-14  items-center justify-start gap-4">
+          <div className="flex items-center justify-center p-4">
+            <Link href="/">
+              <button
+                type="button"
+                className=" mr-2 inline-flex rotate-180 items-center rounded-full  p-2.5 text-center text-sm font-medium text-white hover:bg-stone-500 focus:outline-none focus:ring-1 focus:ring-stone-300 dark:bg-stone-600 dark:hover:bg-stone-700 dark:focus:ring-stone-800"
+              >
+                <svg
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span className="sr-only"></span>
+              </button>
+            </Link>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xl font-bold">
+              {" "}
+              {`${data.username ?? ""}`}
+            </span>
+            <span className="text-sm font-light">
+              {" "}
+              {` ${postCount} Emotions`}
+            </span>
+          </div>
+        </div>
         <div className="relative h-36 bg-slate-600 ">
+          {/* Add post count display here */}
+
           <Image
             src={data.profileImageUrl}
             alt={`${data.username ?? ""}'s profile pic`}
@@ -50,7 +97,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           data.username ?? ""
         }`}</div>
         <div className="w-full border-b border-slate-400"></div>
-        <ProfileFeed userId={data.id} />
+        <ProfileFeed userId={data.id} onPostCountChange={setPostCount} />
       </PageLayout>
     </>
   );

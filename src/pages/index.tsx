@@ -1,6 +1,5 @@
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
-import Head from "next/head";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -11,9 +10,9 @@ import { useState } from "react";
 dayjs.extend(relativeTime);
 
 import { api } from "~/utils/api";
-import type { RouterOutputs } from "~/utils/api";
+
 import toast from "react-hot-toast";
-import Link from "next/link";
+
 import { PageLayout } from "~/components/layout";
 
 import { PostView } from "~/components/postview";
