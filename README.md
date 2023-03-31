@@ -10,6 +10,7 @@ A full-stack Twitter-esque project built with the intention of gaining a better 
 <li>Typescript</li>
 <li>MySQL/PlanetScale</li>
 <li>Upstash/Redis</li>
+<li>TailwindCSS</li>
 </ul>
 
 ## Usage
