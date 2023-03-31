@@ -18,5 +18,21 @@ model Post {
     content  String @db.VarChar(255)
     authorId String
 
+    replies Reply[]
+
     @@index([authorId])
+}
+
+model Reply {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    content  String @db.VarChar(255)
+    authorId String
+
+    postId String // Foreign key
+    post   Post   @relation(fields: [postId], references: [id]) // Relationship
+
+    @@index([authorId])
+    @@index([postId]) // Add this line to create an index on the postId field
 }

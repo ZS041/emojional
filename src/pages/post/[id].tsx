@@ -7,6 +7,57 @@ import { PageLayout } from "~/components/layout";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { PostView } from "~/components/postview";
 import Link from "next/link";
+import { LoadingPage } from "~/components/loading";
+
+const RepliesView = (props: { id: string }) => {
+  const { data, isLoading } = api.replies.getRepliesByPostId.useQuery({
+    postId: props.id,
+  });
+
+  if (isLoading) return <LoadingPage />;
+  if (!data || data.length === 0) return <div>Post has no replies</div>;
+  return (
+    <div>
+      {data.map((replyData) => (
+        <ReplyView
+          key={replyData.reply.id}
+          reply={replyData.reply}
+          author={replyData.author}
+        />
+      ))}
+    </div>
+  );
+};
+
+type ReplyType = {
+  id: string;
+  createdAt: Date;
+  content: string;
+  authorId: string;
+  postId: string;
+};
+
+type AuthorType = {
+  id: string;
+  username: string;
+  // Include any other necessary properties for the author here
+};
+
+const ReplyView = ({
+  reply,
+  author,
+}: {
+  reply: ReplyType;
+  author: AuthorType;
+}) => {
+  return (
+    <div>
+      <p>{reply.content}</p>
+      <p>Author: {author.username}</p>
+      {/* Render any other reply and author details here */}
+    </div>
+  );
+};
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
   const { data } = api.posts.getById.useQuery({
@@ -50,6 +101,7 @@ const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
           </div>
         </div>
         <PostView {...data} />
+        <RepliesView id={id} />
       </PageLayout>
     </>
   );
