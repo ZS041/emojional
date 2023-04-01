@@ -14,6 +14,7 @@ import { useUser } from "@clerk/nextjs";
 
 import { LoadingSpinner } from "~/components/loading";
 
+import { SignInButton } from "@clerk/nextjs";
 dayjs.extend(relativeTime);
 
 import toast from "react-hot-toast";
@@ -110,7 +111,12 @@ const CreateReplyWizard = ({
 
   console.log(user);
 
-  if (!user) return null;
+  if (!user)
+    return (
+      <div className="flex justify-center">
+        <SignInButton />
+      </div>
+    );
 
   return (
     <div className="flex w-full gap-3">
