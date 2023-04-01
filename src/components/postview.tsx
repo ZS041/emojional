@@ -24,15 +24,13 @@ import { Dialog, Transition } from "@headlessui/react";
 
 type ReplyModalProps = {
   postId: string;
-
-  toggleReplyModal: () => void;
+  open: boolean;
+  onClose: () => void;
 };
-const ReplyModal = ({ postId, toggleReplyModal }: ReplyModalProps) => {
-  const [open, setOpen] = useState(true);
-
+const ReplyModal = ({ postId, onClose, open }: ReplyModalProps) => {
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={toggleReplyModal}>
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -58,14 +56,7 @@ const ReplyModal = ({ postId, toggleReplyModal }: ReplyModalProps) => {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-slate-800 px-4 pb-4  text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
-                  <div className=" text-center ">
-                    <div className="">
-                      <CreateReplyWizard
-                        postId={postId}
-                        toggleReplyModal={toggleReplyModal}
-                      />
-                    </div>
-                  </div>
+                  <CreateReplyWizard postId={postId} onClose={onClose} />
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -80,13 +71,13 @@ type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
 type CreateReplyWizardProps = {
   postId: string;
-  toggleReplyModal: () => void; // Add toggleReplyModal as a prop
+  // Add toggleReplyModal as a prop
 };
 
 const CreateReplyWizard = ({
   postId,
-  toggleReplyModal,
-}: CreateReplyWizardProps) => {
+  onClose,
+}: CreateReplyWizardProps & { onClose: () => void }) => {
   const { user } = useUser();
 
   const ctx = api.useContext();
@@ -95,7 +86,7 @@ const CreateReplyWizard = ({
     onSuccess: () => {
       setInput("");
       void ctx.replies.getRepliesByPostId.invalidate();
-      toggleReplyModal(); // call toggleReplyModal function to close the modal
+      // call toggleReplyModal function to close the modal
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -156,11 +147,8 @@ const CreateReplyWizard = ({
 
 export const PostView = (props: PostWithUser) => {
   const { post, author } = props;
-  const [showReplyModal, setShowReplyModal] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  const toggleReplyModal = () => {
-    setShowReplyModal(!showReplyModal);
-  };
   return (
     <div key={post.id} className=" border-b border-slate-400 p-4">
       <div className="flex gap-3">
@@ -188,11 +176,13 @@ export const PostView = (props: PostWithUser) => {
         </div>
       </div>
       <div className="flex h-5 justify-between px-[72px] align-bottom">
-        {showReplyModal && (
-          <ReplyModal postId={post.id} toggleReplyModal={toggleReplyModal} />
-        )}
+        <ReplyModal
+          postId={post.id}
+          open={open}
+          onClose={() => setOpen(false)}
+        />
 
-        <button onClick={toggleReplyModal}>
+        <button onClick={() => setOpen(true)}>
           <Image src={chatBubble} alt="Reply" height={18} width={18} />
         </button>
       </div>
