@@ -54,13 +54,6 @@ const ReplyView = ({
   return (
     <div key={reply.id} className=" border-b border-slate-400 p-4">
       <div className="flex gap-3">
-        <Image
-          src={reply.authorId}
-          alt={`@${author.username}'s profile image`}
-          className="h-14 w-14 rounded-full"
-          width={56}
-          height={56}
-        />
         <div className="flex flex-col">
           <div className="flex gap-1 text-slate-400">
             <Link href={`/@${author.username}`}>
