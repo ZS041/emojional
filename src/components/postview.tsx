@@ -166,13 +166,12 @@ const CreateReplyWizard = ({
 export const PostView = (props: PostWithUser) => {
   const { post, author } = props;
   const [open, setOpen] = useState(false);
-  const { data: count } = api.replies.getReplyCountByPostId.useQuery(
+  const { data: replyCount } = api.replies.getReplyCountByPostId.useQuery(
     { postId: post.id },
     {
       enabled: true,
     }
   );
-  console.log(count);
 
   return (
     <div key={post.id} className=" border-b border-slate-400 p-4">
@@ -208,7 +207,7 @@ export const PostView = (props: PostWithUser) => {
           onClick={() => setOpen(true)}
         >
           <Image src={chatBubble} alt="Reply" height={18} width={18} />
-          <span>{count}</span>
+          <span>{replyCount !== 0 && replyCount}</span>
         </button>
       </div>
     </div>
