@@ -32,6 +32,19 @@ return replies.map((reply)=>{
 }
 
 export const repliesRouter = createTRPCRouter({
+
+
+  getReplyCountByPostId: publicProcedure
+  .input(z.object({ postId: z.string() }))
+  .query(async ({ ctx, input }) => {
+    const count = await ctx.prisma.reply.count({
+      where: { postId: input.postId },
+    });
+
+    return count;
+  }),
+
+
   // Get all replies for a specific post
   getRepliesByPostId: publicProcedure
     .input(z.object({ postId: z.string() }))
@@ -44,6 +57,10 @@ export const repliesRouter = createTRPCRouter({
 
       return addUserDataToReplies(replies);
     }),
+
+
+    
+
 
   // Create a new reply for a specific post
   createReply: privateProcedure

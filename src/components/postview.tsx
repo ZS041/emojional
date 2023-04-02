@@ -23,11 +23,12 @@ import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
 type ReplyModalProps = {
-  postId: string;
+  post: PostWithUser;
   open: boolean;
   onClose: () => void;
 };
-const ReplyModal = ({ postId, onClose, open }: ReplyModalProps) => {
+
+const ReplyModal = ({ post, onClose, open }: ReplyModalProps) => {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -55,8 +56,24 @@ const ReplyModal = ({ postId, onClose, open }: ReplyModalProps) => {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-slate-800 px-4 pb-4  text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
-                <div>
-                  <CreateReplyWizard postId={postId} onClose={onClose} />
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-row items-center gap-2">
+                    <div className=" rounded-full">
+                      <Image
+                        src={post.author.profileImageUrl}
+                        height={32}
+                        width={32}
+                        alt="Profile Pic"
+                        className=" rounded-full"
+                      ></Image>
+                    </div>
+                    {/*add a template literal with post.author.username with an @ in front of it */}
+
+                    <div>{`@${post.author.username}`}</div>
+                  </div>
+                  <div>{post.post.content}</div>
+                  <div className="border border-b border-slate-500" />
+                  <CreateReplyWizard post={post} onSubmitSuccess={onClose} />
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -70,14 +87,14 @@ const ReplyModal = ({ postId, onClose, open }: ReplyModalProps) => {
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
 type CreateReplyWizardProps = {
-  postId: string;
-  // Add toggleReplyModal as a prop
+  post: PostWithUser;
+  onSubmitSuccess: () => void;
 };
 
 const CreateReplyWizard = ({
-  postId,
-  onClose,
-}: CreateReplyWizardProps & { onClose: () => void }) => {
+  post,
+  onSubmitSuccess,
+}: CreateReplyWizardProps) => {
   const { user } = useUser();
 
   const ctx = api.useContext();
@@ -86,7 +103,8 @@ const CreateReplyWizard = ({
     onSuccess: () => {
       setInput("");
       void ctx.replies.getRepliesByPostId.invalidate();
-      // call toggleReplyModal function to close the modal
+      void ctx.replies.getReplyCountByPostId.invalidate();
+      onSubmitSuccess();
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -122,7 +140,7 @@ const CreateReplyWizard = ({
           if (e.key === "Enter") {
             e.preventDefault();
             if (input !== "") {
-              mutate({ content: input, postId: postId });
+              mutate({ content: input, postId: post.post.id });
             }
           }
         }}
@@ -130,7 +148,7 @@ const CreateReplyWizard = ({
       {input !== "" && !isPosting && (
         <button
           onClick={() => {
-            mutate({ content: input, postId: postId });
+            mutate({ content: input, postId: post.post.id });
           }}
         >
           Post
@@ -148,6 +166,13 @@ const CreateReplyWizard = ({
 export const PostView = (props: PostWithUser) => {
   const { post, author } = props;
   const [open, setOpen] = useState(false);
+  const { data: count } = api.replies.getReplyCountByPostId.useQuery(
+    { postId: post.id },
+    {
+      enabled: true,
+    }
+  );
+  console.log(count);
 
   return (
     <div key={post.id} className=" border-b border-slate-400 p-4">
@@ -176,14 +201,14 @@ export const PostView = (props: PostWithUser) => {
         </div>
       </div>
       <div className="flex h-5 justify-between px-[72px] align-bottom">
-        <ReplyModal
-          postId={post.id}
-          open={open}
-          onClose={() => setOpen(false)}
-        />
+        <ReplyModal post={props} open={open} onClose={() => setOpen(false)} />
 
-        <button onClick={() => setOpen(true)}>
+        <button
+          className="flex flex-row items-center gap-2 "
+          onClick={() => setOpen(true)}
+        >
           <Image src={chatBubble} alt="Reply" height={18} width={18} />
+          <span>{count}</span>
         </button>
       </div>
     </div>
