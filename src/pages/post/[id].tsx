@@ -3,11 +3,12 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 
 import { PageLayout } from "~/components/layout";
-
+import Image from "next/image";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { PostView } from "~/components/postview";
 import Link from "next/link";
 import { LoadingPage } from "~/components/loading";
+import dayjs from "dayjs";
 
 const RepliesView = (props: { id: string }) => {
   const { data, isLoading } = api.replies.getRepliesByPostId.useQuery({
@@ -51,10 +52,30 @@ const ReplyView = ({
   author: AuthorType;
 }) => {
   return (
-    <div>
-      <p>{reply.content}</p>
-      <p>Author: {author.username}</p>
-      {/* Render any other reply and author details here */}
+    <div key={reply.id} className=" border-b border-slate-400 p-4">
+      <div className="flex gap-3">
+        <Image
+          src={reply.authorId}
+          alt={`@${author.username}'s profile image`}
+          className="h-14 w-14 rounded-full"
+          width={56}
+          height={56}
+        />
+        <div className="flex flex-col">
+          <div className="flex gap-1 text-slate-400">
+            <Link href={`/@${author.username}`}>
+              <span> {`@${author.username}`}</span>
+            </Link>
+
+            <span className="font-thin">{` · ${dayjs(
+              reply.createdAt
+            ).fromNow()}`}</span>
+          </div>
+          <div>
+            <span className="text-xl">{reply.content}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
