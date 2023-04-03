@@ -4,25 +4,20 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 
 dayjs.extend(relativeTime);
-import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+
 import { api, type RouterOutputs } from "~/utils/api";
 
 import Link from "next/link";
 import chatBubble from "~/images/UI/chatbubble.svg";
 
-import { useUser } from "@clerk/nextjs";
-
-import { LoadingSpinner } from "~/components/loading";
-
-import { SignInButton } from "@clerk/nextjs";
 dayjs.extend(relativeTime);
 
+import { ReplyModal } from "./replymodal";
+import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 
-import { Fragment, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-
-import { ReplyModal } from "./replymodal";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
@@ -35,6 +30,67 @@ export const PostView = (props: PostWithUser) => {
       enabled: true,
     }
   );
+  type CreateLikeWizardProps = {
+    post: PostWithUser;
+  };
+  const { data: likesCount } = api.likes.countLikes.useQuery(
+    { postId: post.id },
+    { enabled: true }
+  );
+
+  const CreateLikeWizard = ({ post }: CreateLikeWizardProps) => {
+    const { user } = useUser();
+    const ctx = api.useContext();
+    const createLikeMutation = api.likes.create.useMutation({
+      onSuccess: () => {
+        console.log("like created");
+        void ctx.likes.countLikes.invalidate();
+      },
+      onError: (e) => {
+        const errorMessage = e.data?.zodError?.fieldErrors.content;
+        if (errorMessage && errorMessage[0]) {
+          toast.error(errorMessage[0]);
+        } else {
+          toast.error("Failed to like. Something went wrong.");
+        }
+      },
+    });
+
+    const deleteLikeMutation = api.likes.delete.useMutation({
+      onSuccess: () => {
+        console.log("like deleted");
+        void ctx.likes.countLikes.invalidate();
+      },
+      onError: (e) => {
+        toast.error("Failed to unlike. Something went wrong.");
+      },
+    });
+
+    const { data: hasLiked } = api.likes.hasLiked.useQuery(
+      { postId: post.post.id },
+      { enabled: true }
+    );
+
+    console.log(user);
+
+    return (
+      <div className="flex w-full gap-3">
+        {hasLiked ? (
+          <button
+            onClick={() => deleteLikeMutation.mutate({ postId: post.post.id })}
+          >
+            <AiFillHeart size={20} />
+          </button>
+        ) : (
+          <button
+            onClick={() => createLikeMutation.mutate({ postId: post.post.id })}
+          >
+            <AiOutlineHeart size={20} />
+          </button>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div key={post.id} className=" border-b border-slate-400 p-4">
@@ -64,14 +120,19 @@ export const PostView = (props: PostWithUser) => {
       </div>
       <div className="flex h-5 justify-between px-[72px] align-bottom">
         <ReplyModal post={props} open={open} onClose={() => setOpen(false)} />
-        <button>LIKES GO HERE</button>
-        <button
-          className="flex flex-row items-center gap-2 "
-          onClick={() => setOpen(true)}
-        >
-          <Image src={chatBubble} alt="Reply" height={18} width={18} />
-          <span>{replyCount !== 0 && replyCount}</span>
-        </button>
+        <div className="flex flex-row items-center justify-center gap-4">
+          <button
+            className="flex flex-row items-center justify-center gap-2 "
+            onClick={() => setOpen(true)}
+          >
+            <Image src={chatBubble} alt="Reply" height={18} width={18} />
+            <span>{replyCount !== 0 && replyCount}</span>
+          </button>
+          <div className="flex flex-row items-center justify-center gap-2">
+            <CreateLikeWizard post={props} />
+            <span>{likesCount !== 0 && likesCount}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

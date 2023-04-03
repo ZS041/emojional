@@ -34,3 +34,17 @@ model Reply {
     @@index([authorId])
     @@index([postId]) // Add this line to create an index on the postId field
 }
+
+model Like {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    userId String
+    postId String
+
+    post Post @relation(fields: [postId], references: [id])
+
+    @@unique([userId, postId]) // To prevent a user from liking a post multiple times
+    @@index([userId])
+    @@index([postId])
+}
