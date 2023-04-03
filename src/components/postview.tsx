@@ -66,16 +66,20 @@ export const PostView = (props: PostWithUser) => {
       },
     });
 
-    const { data: hasLiked } = api.likes.hasLiked.useQuery(
-      { postId: post.post.id },
-      { enabled: true }
-    );
+    let hasLikedData;
+    if (user) {
+      const { data: hasLiked } = api.likes.hasLiked.useQuery(
+        { postId: post.post.id },
+        { enabled: true }
+      );
+      hasLikedData = hasLiked;
+    }
 
     console.log(user);
 
     return (
       <div className="flex w-full gap-3">
-        {hasLiked ? (
+        {user && hasLikedData ? (
           <button
             onClick={() => deleteLikeMutation.mutate({ postId: post.post.id })}
           >
@@ -91,7 +95,6 @@ export const PostView = (props: PostWithUser) => {
       </div>
     );
   };
-
   return (
     <div key={post.id} className=" border-b border-slate-400 p-4">
       <div className="flex gap-3">

@@ -4,7 +4,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, privateProcedure } from "../trpc";
+import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 
 
 
@@ -32,7 +32,7 @@ export const likesRouter = createTRPCRouter({
         return like;
       }),
 
-      countLikes: privateProcedure
+      countLikes: publicProcedure
   .input(z.object({ postId: z.string() }))
   .query(async ({ ctx, input }) => {
     const likesCount = await ctx.prisma.like.count({
