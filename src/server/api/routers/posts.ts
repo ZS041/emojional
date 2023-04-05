@@ -7,7 +7,8 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure,privateProcedure } from "../trpc";
 
-
+import { likesRouter } from "./likes";
+import { repliesRouter } from "./replies";
 
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
 import { Redis } from "@upstash/redis";

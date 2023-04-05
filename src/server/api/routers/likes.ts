@@ -31,6 +31,16 @@ export const likesRouter = createTRPCRouter({
   
         return like;
       }),
+      getLikesByManyPostIds: publicProcedure
+        .input(z.object({ postIds: z.array(z.string()) }))
+        .query(async ({ ctx, input }) => {
+            const likes = await ctx.prisma.like.findMany({
+                where: { postId: { in: input.postIds } },
+            });
+
+            return likes;
+        }),
+        
 
       countLikes: publicProcedure
   .input(z.object({ postId: z.string() }))
