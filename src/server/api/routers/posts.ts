@@ -40,6 +40,7 @@ return posts.map((post)=>{
 });
 }
 
+
 // Create a new ratelimiter, that allows 3 requests per 1 minute
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -73,26 +74,38 @@ export const postsRouter = createTRPCRouter({
 
 
 
-  getAll: publicProcedure.query(async({ ctx }) => {
+  getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
-        take: 100,
-        orderBy: [{createdAt: 'desc'}]
+      take: 100,
+      orderBy: [{ createdAt: "desc" }],
+      include: {
+        
+        _count: {
+          select: { likes: true, replies: true },
+        },
+      },
     });
-
+  
     return addUserDataToPosts(posts);
   }),
-
-  getPostsByUserId: publicProcedure.input(z.object({
-    userId:z.string(),
-
-  })).query(({ctx, input}) => ctx.prisma.post.findMany({
-    where:{
-      authorId: input.userId,
-    },
-    take: 100,
-    orderBy: [{createdAt: 'desc'}]
-  }).then(addUserDataToPosts)
-  ),
+  
+  getPostsByUserId: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const posts = await ctx.prisma.post.findMany({
+        where: { authorId: input.userId },
+        take: 100,
+        orderBy: [{ createdAt: "desc" }],
+        include: {
+          
+          _count: {
+            select: { likes: true, replies: true },
+          },
+        },
+      });
+  
+      return addUserDataToPosts(posts);
+    }),
 
   
 

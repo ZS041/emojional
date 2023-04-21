@@ -10,6 +10,23 @@ import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 
 
 export const likesRouter = createTRPCRouter({
+
+  
+
+
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const likes = await ctx.prisma.like.findMany({
+      take: 100,
+      orderBy: [{ createdAt: "desc" }],
+  
+    });
+
+    return likes;
+  }),
+  
+
+
+
     create: privateProcedure
       .input(z.object({ postId: z.string() }))
       .mutation(async ({ ctx, input }) => {
@@ -31,15 +48,7 @@ export const likesRouter = createTRPCRouter({
   
         return like;
       }),
-      getLikesByManyPostIds: publicProcedure
-        .input(z.object({ postIds: z.array(z.string()) }))
-        .query(async ({ ctx, input }) => {
-            const likes = await ctx.prisma.like.findMany({
-                where: { postId: { in: input.postIds } },
-            });
-
-            return likes;
-        }),
+      
         
 
       countLikes: publicProcedure
