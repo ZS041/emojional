@@ -3,7 +3,7 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 
 import { PageLayout } from "~/components/layout";
-import Image from "next/image";
+
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { PostView } from "~/components/postview";
 import Link from "next/link";
